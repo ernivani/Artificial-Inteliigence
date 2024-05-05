@@ -1,8 +1,7 @@
 package fr.ernicani.Components;
 
+import fr.ernicani.Graphics.*;
 import fr.ernicani.Graphics.Component;
-import fr.ernicani.Graphics.GameObject;
-import fr.ernicani.Graphics.LevelEditorScene;
 import fr.ernicani.Util.Constants;
 
 import java.awt.*;
@@ -11,11 +10,19 @@ public class Ground extends Component {
 
     @Override
     public void update(double dt) {
-        GameObject player = LevelEditorScene.getScene().player;
-        if (player.transform.position.y + player.getComponent(BoxBounds.class).height >
-                gameObject.transform.position.y) {
-            player.transform.position.y = Constants.GROUND_Y - player.getComponent(BoxBounds.class).height;
+        if (!Game.getWindow().isInEditorMode) {
+            LevelScene scene = (LevelScene)Game.getWindow().getCurrentScene();
+            GameObject player = scene.player;
+            if (player.transform.position.y + player.getComponent(BoxBounds.class).height >
+                    gameObject.transform.position.y) {
+                player.transform.position.y = Constants.GROUND_Y -
+                        player.getComponent(BoxBounds.class).height;
+            }
+            gameObject.transform.position.x = scene.camera.position.x - Constants.CAMERA_OFFSET_X;
+        } else {
+            gameObject.transform.position.x = Game.getWindow().getCurrentScene().camera.position.x - Constants.CAMERA_OFFSET_X;
         }
+
     }
     @Override
     public void draw(Graphics2D g2) {

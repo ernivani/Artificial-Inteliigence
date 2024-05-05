@@ -3,32 +3,26 @@ package fr.ernicani.Graphics;
 import fr.ernicani.Components.*;
 import fr.ernicani.Util.Constants;
 import fr.ernicani.Util.Vector2;
-import fr.ernicani.dataStructure.AssetPool;
 import fr.ernicani.dataStructure.Transform;
 
 import java.awt.*;
 
-public class LevelEditorScene extends Scene{
+public class LevelScene extends Scene{
 
-    static LevelEditorScene currentScene;
+    static LevelScene currentScene;
     public GameObject player;
-    Grid grid;
-    GameObject ground;
-    CameraControls cameraControls;
-    public LevelEditorScene(String name) {
+    public LevelScene(String name) {
         super.Scene(name);
     }
 
-    public static LevelEditorScene getScene() {
+    public static LevelScene getScene() {
         if (currentScene == null) {
-            currentScene = new LevelEditorScene("LevelEditorScene");
+            currentScene = new LevelScene("LevelEditorScene");
         }
         return currentScene;
     }
     @Override
     public void init() {
-        grid = new Grid();
-        cameraControls = new CameraControls();
         player = new GameObject("testObj", new Transform(new Vector2(500, 350)));
         Spritesheet layerOne = new Spritesheet("assets/player/layerOne.png",
                 42, 42, 2, 13, 13*5);
@@ -38,6 +32,10 @@ public class LevelEditorScene extends Scene{
                 42, 42, 2, 13, 13*5);
         Player playerComp = new Player(layerOne.sprites.get(0), layerTwo.sprites.get(0), layerThree.sprites.get(0), Color.RED, Color.GREEN);
         player.addComponent(playerComp);
+        player.addComponent(new Rigidbody(new Vector2(Constants.PLAYER_SPEED, 0)));
+        player.addComponent(new BoxBounds(Constants.PLAYER_WIDTH, Constants.PLAYER_HEIGHT));
+
+        GameObject ground;
 
         ground = new GameObject("ground", new Transform(
                 new Vector2(0, Constants.GROUND_Y)));
@@ -45,6 +43,7 @@ public class LevelEditorScene extends Scene{
 
         addGameObject(player);
         addGameObject(ground);
+
 
     }
 
@@ -60,15 +59,9 @@ public class LevelEditorScene extends Scene{
             camera.position.y = Constants.CAMERA_OFFSET_GROUND_Y;
         }
 
-
-        camera.position.x += (float) dt * 100.0f;
-//        System.out.println(camera.position.x + " " + camera.position.y);
         for (GameObject g : gameObjects) {
             g.update(dt);
         }
-
-        cameraControls.update(dt);
-        grid.update(dt);
     }
 
     @Override
@@ -77,6 +70,5 @@ public class LevelEditorScene extends Scene{
         g2.fillRect(0, 0, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT);
         renderer.render(g2);
 
-        grid.draw(g2);
     }
 }
